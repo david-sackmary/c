@@ -70,14 +70,14 @@ def install_halo_debian(ip, id, password, keypair, terminal_buffer):
     if args.debug: print ("%s\n" % buffer)
     temp_buffer += buffer
 
-    time.sleep(6)
+    time.sleep(50)
     cmd = "\n sudo /etc/init.d/cphalod restart --daemon-key=" + args.daemon_key + " --tag=" + args.tag + " --server-label=" + args.server_label + " \n\n\n"
     chan.send(cmd)
     buffer = chan.recv(9999)
     if args.debug: print ("%s\n" % buffer)
     temp_buffer += buffer
 
-    time.sleep(5)
+    time.sleep(50)
     chan.send("\n\n")
     buffer = chan.recv(9999)
     if args.debug: print ("%s\n" % buffer)
@@ -176,8 +176,3 @@ for server in server_list:
             print "package manager not identified..."
 
 print ("\n#################################################################################\n%s" % terminal_buffer)
-
-
-
-
-
