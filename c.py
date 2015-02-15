@@ -6,11 +6,12 @@
 # pip install paramiko
 
 import paramiko, argparse, csv, time
+import subprocess
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--input', '-i', action='store', default='./server_list.txt',
                     help='file path & name for server list')
-parser.add_argument('--keypair', '-k', action='store', default='/Users/Nick/.ssh/coolnick',
+parser.add_argument('--keypair', '-k', action='store', default='/home/f/.ssh/id_rsa',
                     help='Keypair for SSH. WARNING! This will overwrite any keypair name from the input file')
 parser.add_argument('--daemon_key', action='store', default='',
                     help='HALO daemon key for registration')
@@ -22,10 +23,73 @@ parser.add_argument('--debug', '-d', action='store_true', default=True,
                     help='[CoOlNiCk] It will enable debug mode while executing the script')
 args = parser.parse_args()
 
-
 server_list = list(csv.reader(open(args.input, 'rb'), delimiter=' ', skipinitialspace=True))
 
-def install_halo(ip, id, password, keypair, terminal_buffer):
+def install_halo_debian(ip, id, password, keypair, terminal_buffer):
+    terminal_buffer += "\n[" + ip + ']\n'
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(ip, username=id, password=password, key_filename=keypair)
+
+    chan = ssh.invoke_shell()
+    temp_buffer = ''
+
+    time.sleep(3)
+    chan.send('sudo su - \n')
+    buffer = chan.recv(9999)
+    if args.debug: print ("%s\n" % buffer)
+    temp_buffer += buffer
+
+    time.sleep(1)
+    chan.send("echo 'deb http://packages.cloudpassage.com/debian debian main' | sudo tee /etc/apt/sources.list.d/cloudpassage.list > /dev/null \n")
+    buffer = chan.recv(9999)
+    if args.debug: print ("%s\n" % buffer)
+    temp_buffer += buffer
+
+    time.sleep(3)
+    chan.send("sudo apt-get -y install curl \n")
+    buffer = chan.recv(9999)
+    if args.debug: print ("%s\n" % buffer)
+    temp_buffer += buffer
+
+    time.sleep(4)
+    chan.send("\n curl http://packages.cloudpassage.com/cloudpassage.packages.key | sudo apt-key add -")
+    buffer = chan.recv(9999)
+    if args.debug: print ("%s\n" % buffer)
+    temp_buffer += buffer
+
+    time.sleep(4)
+    chan.send("\n sudo apt-get update > /dev/null \n")
+    buffer = chan.recv(9999)
+    if args.debug: print ("%s\n" % buffer)
+    temp_buffer += buffer
+
+    time.sleep(4)
+    chan.send("\n sudo apt-get -y install cphalo \n") 
+    buffer = chan.recv(9999)
+    if args.debug: print ("%s\n" % buffer)
+    temp_buffer += buffer
+
+    time.sleep(4)
+    cmd = "\n sudo /etc/init.d/cphalod restart --daemon-key=" + args.daemon_key + " --tag=" + args.tag + " --server-label=" + args.server_label + " \n\n\n"
+    chan.send(cmd)
+    buffer = chan.recv(9999)
+    if args.debug: print ("%s\n" % buffer)
+    temp_buffer += buffer
+
+    time.sleep(5)
+    chan.send("\n\n")
+    buffer = chan.recv(9999)
+    if args.debug: print ("%s\n" % buffer)
+    temp_buffer += buffer
+
+    terminal_buffer += temp_buffer
+    terminal_buffer += "\n================================================================"
+    ssh.close()
+
+    return terminal_buffer
+
+def install_halo_centos(ip, id, password, keypair, terminal_buffer):
     terminal_buffer += "\n[" + ip + ']\n'
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -96,7 +160,22 @@ for server in server_list:
     if args.debug:
         print ('Server IP: %s\nLogin ID: %s\nLogin Password: %s\nKeypair: %s\n' % (ip, id, password, keypair))
 
-    terminal_buffer = install_halo(ip, id, password, keypair, terminal_buffer)
+    isDebian = subprocess.Popen("which apt-get", stdout=subprocess.PIPE, shell=True).stdout.read()
+    isDebian = isDebian.replace("\n","")
+    if isDebian == '/usr/bin/apt-get':
+        if args.debug: print ("%s\n" % "package manager is apt-get")
+        temp_buffer += buffer
+        terminal_buffer = install_halo_debian(ip, id, password, keypair, terminal_buffer)
+    else:
+        isCentOS = subprocess.Popen("which yum", stdout=subprocess.PIPE, shell=True).stdout.read()
+        isCentOS = isDebian.replace("\n","")
+        print isCentos         #remove later, then fill in line below
+        if isCentOS == 'yum':  #expand this...
+            if args.debug: print ("%s\n" % "package manager is yum")
+            temp_buffer += buffer
+            terminal_buffer = install_halo_centos(ip, id, password, keypair, terminal_buffer)
+        else:
+            print "package manager not identified..."
 
 print ("\n#################################################################################\n%s" % terminal_buffer)
 
