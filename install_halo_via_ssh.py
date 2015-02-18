@@ -39,12 +39,15 @@ def install_halo_debian(ip, id, password, keypair, terminal_buffer):
     buffer = chan.recv(9999)
     if args.debug: print ("%s\n" % buffer)
     temp_buffer += buffer
+    
+    print temp_buffer  #get the last line.  that will be the prompt.
 
     time.sleep(1)
     chan.send("echo 'deb http://packages.cloudpassage.com/debian debian main' | sudo tee /etc/apt/sources.list.d/cloudpassage.list > /dev/null \n")
     buffer = chan.recv(9999)
     if args.debug: print ("%s\n" % buffer)
     temp_buffer += buffer
+    #check_lastLine(buffer) is last line of buffer the prompt?
 
     time.sleep(3)
     chan.send("sudo apt-get -y install curl \n")
