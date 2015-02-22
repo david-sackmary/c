@@ -27,41 +27,39 @@ def install_halo(host, id, password, keypair, terminal_buffer):
       print "Could not connect to %s. Giving up" % host
       sys.exit(1)
 
-    # Get sudo or error out
+    # Sudo on the remote server
     a, b, c = ssh.exec_command('sudo su')
-    if args.debug: print b.readlines()
 
     # Identify which package manager is installed on the remote system
     a, b, c = ssh.exec_command('which apt-get')
     pkg_manager =  b.readlines()[0]
     if args.debug: print "Package manager is: ", pkg_manager
 
-    # Install Halo or error trying
+    # Install Halo
     if "apt-get" in pkg_manager:
       a, b, c = ssh.exec_command("echo 'deb http://packages.cloudpassage.com/debian debian main' | sudo tee /etc/apt/sources.list.d/cloudpassage.list > /dev/null \n")
-      if args.debug: print b.readlines()
+      if args.debug: print "DEBUG echo (expecting empty set) : \n" + str(b.readlines()) + "\n"
       a, b, c = ssh.exec_command("sudo apt-get -y install curl \n")
-      if args.debug: print b.readlines()
+      if args.debug: print "DEBUG installing curl : \n" + str(b.readlines()) + "\n"
       a, b, c = ssh.exec_command("curl http://packages.cloudpassage.com/cloudpassage.packages.key | sudo apt-key add -") 
-      if args.debug: print b.readlines()
+      if args.debug: print "DEBUG curl (expecting OK): \n" + str(b.readlines()) + "\n"
       a, b, c = ssh.exec_command("sudo apt-get update > /dev/null \n")
-      if args.debug: print b.readlines()
+      if args.debug: print "DEBUG update (expecting empty set) : \n" + str(b.readlines()) + "\n"
       a, b, c = ssh.exec_command("sudo apt-get -y install cphalo \n")
-      if args.debug: print b.readlines()
+      if args.debug: print "DEBUG sudo apt-get install Halo: \n" + str(b.readlines()) + "\n"
     elif "yum" in pkg_manager:
       a, b, c = ssh.exec_command("echo -e '[cloudpassage]\nname=CloudPassage\nbaseurl=http://packages.cloudpassage.com/redhat/$basearch\ngpgcheck=1' | tee /etc/yum.repos.d/cloudpassage.repo > /dev/null \n")
-      if args.debug: print b.readlines()
+      if args.debug: print "DEBUG echo: \n" + str(b.readlines()) + "\n"
       a, b, c = ssh.exec_command("rpm --import http://packages.cloudpassage.com/cloudpassage.packages.key")
-      if args.debug: print b.readlines()
+      if args.debug: print "DEBUG rpm: \n" + str(b.readlines()) + "\n"
       a, b, c = ssh.exec_command("yum check-update > /dev/null")
-      if args.debug: print b.readlines()
+      if args.debug: print "DEBUG yum check-update: \n" + str(b.readlines()) + "\n"
       a, b, c = ssh.exec_command("yum -y install cphalo")
-      if args.debug: print b.readlines()
+      if args.debug: print "DEBUG yum install Halo: \n" + str(b.readlines()) + "\n"
 
     cmd = "/etc/init.d/cphalod restart --daemon-key=" + args.daemon_key + " --tag=" + args.tag + " --server-label=" + args.server_label + "\n"
     a, b, c = ssh.exec_command(cmd)
-    if args.debug: print b.readlines()
-
+    if args.debug: print "DEBUG /etc/init.d/cphalod restart (expecting empty set) : \n" + str(b.readlines()) + "\n"
     return terminal_buffer
 
 
@@ -78,7 +76,7 @@ parser.add_argument('--tag', '-t', action='store', default='',
                     help='HALO server group tag for registration')
 parser.add_argument('--server_label', '-s', action='store', default='',
                     help='Server label for registration')
-parser.add_argument('--debug', '-d', action='store_true', default=True,
+parser.add_argument('--debug', '-d', action='store_true', default=False,
                     help='[CoOlNiCk] It will enable debug mode while executing the script')
 args = parser.parse_args()
 
@@ -98,4 +96,10 @@ for server in server_list:
 
     terminal_buffer = install_halo(ip, id, password, keypair, terminal_buffer)
 
-print ("\n############################################################################\n%s" % terminal_buffer)
+if args.debug: print ("### END install_halo_via_ssh.  Servers touched (not yet separating out the FAILS ###%s" % terminal_buffer)###
+
+############## NOTE TO FUTURE DEVELOPER/TEST/QA:
+############## REPLACE THE PRINT ABOVE WITH THE ONES BELOW AFTER
+############## BETTER ERROR CHECKING ON BAD/DOWN SERVERS AND CREATE THIS LIST 
+#print ("\n### Servers Installed #\n%s" % terminal_buffer_good)
+#print ("\n### Servers Not Installed #\n%s" % terminal_buffer_bad)
