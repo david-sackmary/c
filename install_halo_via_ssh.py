@@ -1,3 +1,9 @@
+### Install_halo_via_ssh.py expects to input 'server_list.txt' from the same directory,
+### unless a different file is supplied as an arg.  Each line in server_list.txt should
+### contain 3 values:  ip_address user pwd
+###
+### Note: More error checking should be done for bad/down servers.
+
 import paramiko, argparse, csv, time, sys
 
 def install_halo(host, id, password, keypair):
