@@ -1,9 +1,6 @@
 import paramiko, argparse, csv, time, sys
 
-def install_halo(host, id, password, keypair, terminal_buffer):
-
-    terminal_buffer += "\n[" + ip + ']\n'
-
+def install_halo(host, id, password, keypair):
     i = 1
     while 1 < 30 :
       if args.debug: print ("Trying to connect to %s (%i/30)" % (host, i))
@@ -11,7 +8,7 @@ def install_halo(host, id, password, keypair, terminal_buffer):
       try: 
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(ip, username=id, password=password, key_filename=keypair)
+        ssh.connect(host, username=id, password=password, key_filename=keypair)
         if args.debug: print "Connected to %s" % host
         break
       except paramiko.AuthenticationException:
@@ -60,8 +57,7 @@ def install_halo(host, id, password, keypair, terminal_buffer):
     cmd = "/etc/init.d/cphalod restart --daemon-key=" + args.daemon_key + " --tag=" + args.tag + " --server-label=" + args.server_label + "\n"
     a, b, c = ssh.exec_command(cmd)
     if args.debug: print "DEBUG /etc/init.d/cphalod restart (expecting empty set) : \n" + str(b.readlines()) + "\n"
-    return terminal_buffer
-
+    return True #Add error handling later
 
 ### Begin Execution ###
 
@@ -82,9 +78,10 @@ args = parser.parse_args()
 
 server_list = list(csv.reader(open(args.input, 'rb'), delimiter=' ', skipinitialspace=True))
 
-terminal_buffer =''
+success_buffer =''
+error_buffer =''
 for server in server_list:
-    ip = server[0]
+    host = server[0]
     id = server[1]
     password = server[2]
     if args.keypair == None and len(server) > 3:
@@ -92,14 +89,20 @@ for server in server_list:
     else:
         keypair = args.keypair
     if args.debug:
-        print ('Server IP: %s\nLogin ID: %s\nLogin Password: %s\nKeypair: %s\n' % (ip, id, password, keypair))
+        print ('Server IP: %s\nLogin ID: %s\nLogin Password: %s\nKeypair: %s\n' % (host, id, password, keypair))
 
-    terminal_buffer = install_halo(ip, id, password, keypair, terminal_buffer)
+    success = install_halo(host, id, password, keypair)
+    if success:  
+        success_buffer += "\n[" + host + ']\n'
+    else:   
+        error_buffer += "\n[" + host + ']\n'
 
-if args.debug: print ("### END install_halo_via_ssh.  Servers touched (not yet separating out the FAILS ###%s" % terminal_buffer)###
+if args.debug: 
+    if success_buffer:
+        print ("### Successfully installed Halo on these servers: %s" % success_buffer)###")
+    if error_buffer:
+        print ("\n\n### ERROR installing Halo on these servers: %s" % success_buffer)###")        
+    print ("### END install_halo_via_ssh  ###")
 
 ############## NOTE TO FUTURE DEVELOPER/TEST/QA:
-############## REPLACE THE PRINT ABOVE WITH THE ONES BELOW AFTER
-############## BETTER ERROR CHECKING ON BAD/DOWN SERVERS AND CREATE THIS LIST 
-#print ("\n### Servers Installed #\n%s" % terminal_buffer_good)
-#print ("\n### Servers Not Installed #\n%s" % terminal_buffer_bad)
+############## THIS CODE NEEDS ERROR CHECKING ON BAD/DOWN SERVERS
