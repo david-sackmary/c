@@ -1,4 +1,4 @@
-# This Git repository contains scriptfor remotely accessing servers to get iptables, install Halo, and remove Halo.
+This Git repository contains scriptfor remotely accessing servers to get iptables, install Halo, and remove Halo.
 
 get_iptables.py 
 * - Inputs server_list.txt which contains tuples of IP, username, password.  One tuple per line.
