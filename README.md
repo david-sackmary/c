@@ -6,8 +6,10 @@ Authors: David Sackmary - dsackmary@cloudpassage.com
 
 Remotely accesses an arbitrary number of remote servers and returns their iptables.
 
-Dependencies:
+##Dependencies:
 
+    argparse
+    csv
     paramiko
     
 
