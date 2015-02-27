@@ -105,7 +105,7 @@ for server in server_list:
 
 if args.debug: 
     if success_buffer:
-        print ("### Successfully installed Halo on these servers: %s" % success_buffer)###")
+        print ("### Halo is installed on these servers: %s" % success_buffer)###")
     if error_buffer:
         print ("\n\n### ERROR installing Halo on these servers: %s" % success_buffer)###")        
     print ("### END install_halo_via_ssh  ###")
