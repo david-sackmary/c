@@ -1,8 +1,14 @@
+#install_halo_via_ssh.py
+* Inputs server_list.txt which contains tuples of IP, username, password.  One tuple per line.
+
+#remove_halo_via_ssy.py
+* Inputs server_list.txt which contains tuples of IP, username, password.  One tuple per line.
+
 #Get_Iptables.py
 * Inputs server_list.txt which contains tuples of IP, username, password.  One tuple per line.
 * Outputs the iptables on those servers, one txt file per server, each file named after the server
 
-Authors: David Sackmary - dsackmary@cloudpassage.com
+Authors:
 
 Remotely accesses an arbitrary number of remote servers and returns their iptables.
 
@@ -22,6 +28,9 @@ Clone, download, or fork the git repo, then configure as below.
 Edit server_list.txt.  For each line, add an IP address, username and password.
 
 ##Usage:
+
+./install_halo_via_ssh.py server_list.txt
+Installs Halo on each server listed in server_list.txt
 
 ./get_iptables.py server_list.txt
 
