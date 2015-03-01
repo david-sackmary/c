@@ -26,10 +26,12 @@ Edit server_list.txt.  For each line, add an IP address, username and password.
 ##Usage:
 
 ./install_halo_via_ssh.py server_list.txt
-#Installs Halo on each server listed in server_list.txt
+
+Installs Halo on each server listed in server_list.txt
 
 ./get_iptables.py server_list.txt
-#Remotely accesses an arbitrary number of remote servers and returns their iptables.
+
+Remotely accesses an arbitrary number of remote servers and returns their iptables.
 
 ##Output
 The only program in this repo with output is get_iptables.py
