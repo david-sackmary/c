@@ -25,7 +25,7 @@ Edit server_list.txt.  For each line, add an IP address, username and password.
 
 ##Usage:
 
-./install_halo_via_ssh.py server_list.txt
+./install_halo_via_ssh.py server_list.txt --daemon_key="your Halo secret key"
 
 Installs Halo on each server listed in server_list.txt
 
