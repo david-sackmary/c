@@ -60,9 +60,9 @@ def install_halo(host, id, password, keypair):
       a, b, c = ssh.exec_command("yum -y install cphalo")
       if args.debug: print "DEBUG yum install Halo: \n" + str(b.readlines()) + "\n"
 
-    cmd = "/etc/init.d/cphalod restart --daemon-key=" + args.daemon_key + " --tag=" + args.tag + " --server-label=" + args.server_label + "\n"
+    cmd = "sudo /etc/init.d/cphalod start --daemon-key=" + args.daemon_key + " --tag=" + args.tag + " --server-label=" + args.server_label + "\n"
     a, b, c = ssh.exec_command(cmd)
-    if args.debug: print "DEBUG /etc/init.d/cphalod restart --daemon-key" + args.daemon_key + "(expecting empty set) : \n" + str(b.readlines()) + "\n"
+    if args.debug: print "DEBUG sudo /etc/init.d/cphalod start --daemon-key=" + args.daemon_key + "\n(expecting empty set) : \n" + str(b.readlines()) + "\n"
     return True #Add error handling later
 
 ### Begin Execution ###
