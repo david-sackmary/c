@@ -49,7 +49,7 @@ def install_halo(host, id, password, keypair):
       a, b, c = ssh.exec_command("sudo apt-get update > /dev/null \n")
       if args.debug: print "DEBUG update (expecting empty set) : \n" + str(b.readlines()) + "\n"
       a, b, c = ssh.exec_command("sudo apt-get -y install cphalo \n")
-      if args.debug: print "DEBUG sudo apt-get install Halo: \n" + str(b.readlines()) + "\n"
+      if args.debug: print "DEBUG sudo apt-get -y install Halo \n" + str(b.readlines()) + "\n"
     elif "yum" in pkg_manager:
       a, b, c = ssh.exec_command("echo -e '[cloudpassage]\nname=CloudPassage\nbaseurl=http://packages.cloudpassage.com/redhat/$basearch\ngpgcheck=1' | tee /etc/yum.repos.d/cloudpassage.repo > /dev/null \n")
       if args.debug: print "DEBUG echo: \n" + str(b.readlines()) + "\n"
@@ -62,7 +62,7 @@ def install_halo(host, id, password, keypair):
 
     cmd = "/etc/init.d/cphalod restart --daemon-key=" + args.daemon_key + " --tag=" + args.tag + " --server-label=" + args.server_label + "\n"
     a, b, c = ssh.exec_command(cmd)
-    if args.debug: print "DEBUG /etc/init.d/cphalod restart (expecting empty set) : \n" + str(b.readlines()) + "\n"
+    if args.debug: print "DEBUG /etc/init.d/cphalod restart --daemon-key" + args.daemon_key + "(expecting empty set) : \n" + str(b.readlines()) + "\n"
     return True #Add error handling later
 
 ### Begin Execution ###
