@@ -35,5 +35,4 @@ Remotely accesses an arbitrary number of remote servers and returns their iptabl
 
 ##Output
 The only program in this repo with output is get_iptables.py
-For each line in server_list.txt, get_iptables.py will generate a text file which contains the iptables for that server.
-These text files will appear in the same directory where get_iptables.py is executed.
+For each line in server_list.txt, get_iptables.py will generate a text file which contains the iptables for that server.  The file extension of the output files will be ".iptables" instead of ".txt".  These files are oftentimes input to another repo named Generate_Firewall_rules.  These text files will appear in the same directory where get_iptables.py is executed.
