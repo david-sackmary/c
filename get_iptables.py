@@ -32,7 +32,7 @@ for server in server_list:
     password = server[2]
 
     iptables = get_Iptables(host, id, password)
-    outfile = host + "_iptables.txt"
+    outfile = host + ".iptables"
     file = open(outfile,"w")
     file.write(iptables)
     file.close()
