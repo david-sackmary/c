@@ -17,7 +17,7 @@ def get_Iptables(host, id, password):
     session.exec_command('sudo iptables -L -v -n')
     session.recv_exit_status()
     while session.recv_ready():
-        return session.recv(1024)
+        return session.recv(20000)
 
 ### Begin Execution ###
 parser = argparse.ArgumentParser()
@@ -32,7 +32,7 @@ for server in server_list:
     password = server[2]
 
     iptables = get_Iptables(host, id, password)
-    outfile = host + "_iptables"
+    outfile = host + "_iptables.txt"
     file = open(outfile,"w")
     file.write(iptables)
     file.close()
