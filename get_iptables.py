@@ -8,7 +8,7 @@
 ###       
 ### Note: More error checking should be done for bad/down servers.
 
-import paramiko, argparse, csv
+import paramiko, argparse, csv, time
 
 def get_Iptables(host, id, password):
     trans = paramiko.Transport((host, 22))
@@ -16,8 +16,9 @@ def get_Iptables(host, id, password):
     session = trans.open_channel("session")
     session.exec_command('sudo iptables -L -v -n')
     session.recv_exit_status()
-    while session.recv_ready():
-        return session.recv(20000)
+    while not session.recv_ready():
+        time.sleep(1)
+    return session.recv(40000)
 
 ### Begin Execution ###
 parser = argparse.ArgumentParser()
