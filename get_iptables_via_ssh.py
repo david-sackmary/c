@@ -7,6 +7,7 @@
 ###         Each is named by the ip_address of its' corresponding line.
 ###       
 ### Note: More error checking should be done for bad/down servers.
+### Note: ssh requires a public key for this script, and the matching private key on all servers in 'server_list.txt'
 
 import paramiko, argparse, csv, time, sys
 
