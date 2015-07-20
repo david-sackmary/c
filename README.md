@@ -12,7 +12,7 @@
 
     argparse
     csv
-    paramiko
+    paramiko        ( sudo apt-get install python-pip & sudo pip install paramiko )
     
 
 ##Installation
